@@ -1,16 +1,17 @@
-package indi.zqc.concurrency;
+package indi.zqc.concurrency.example.count;
 
-import indi.zqc.concurrency.annotation.NotThreadSafe;
+import indi.zqc.concurrency.annotation.ThreadSafe;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
-@NotThreadSafe
-public class ConcurrencyTest {
+@ThreadSafe
+public class CountExample4 {
 
     // 总请求数
     private static int clientTotal = 5000;
@@ -20,6 +21,9 @@ public class ConcurrencyTest {
 
     // 最终值
     private static int count = 0;
+
+    // 锁
+    private static ReentrantLock lock = new ReentrantLock();
 
     public static void main(String[] args) throws Exception {
         // 线程池
@@ -46,6 +50,11 @@ public class ConcurrencyTest {
     }
 
     private static void add() {
-        count++;
+        lock.lock();
+        try {
+            count++;
+        } finally {
+            lock.unlock();
+        }
     }
 }
